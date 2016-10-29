@@ -82,7 +82,7 @@ export { InteractivityChecker } from './a11y/interactivity-checker';*/
 /*export * from './compatibility/style-compatibility';*/
 
 // Animation
-/*export * from './animation/animation';*/
+export * from './animation/animation';
 
 // Coersion
 /*export { coerceBooleanProperty } from './coersion/boolean-property';*/

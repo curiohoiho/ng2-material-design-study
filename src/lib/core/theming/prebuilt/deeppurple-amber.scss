@@ -1,0 +1,18 @@
+@import '../all-theme';
+
+
+// include non-theme styles for core
+// pulls in elevation, ripple, a11y, overlay from _core.scss
+@include md-core();
+
+// define a theme
+$primary: md-palette($md-deep-purple);
+$accent: md-palette($md-amber, A200, A100, A400);
+
+$theme: md-light-theme($primary, $accent);
+
+// include all theme styles for the components.
+// from _all-theme.scss
+@include angular-material-theme($theme);
+
+
