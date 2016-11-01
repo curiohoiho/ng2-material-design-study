@@ -42,6 +42,7 @@ export class InteractivityChecker
 
     // use logic from jQuery to check for `display: none`.
     // See https://github.com/jquery/jquery/blob/master/src/css/hiddenVisibleSelectors.js#L12
+    // this also checks for a child of an element that has `display: none`.  See the test.
     // if any of these 3 are false, return false:
     if (!(a_element.offsetWidth || a_element.offsetHeight || a_element.getClientRects().length))
     {

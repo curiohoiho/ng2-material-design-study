@@ -47,6 +47,104 @@ describe('InteractivityChecker', () => {
   }); // describe('isDisabled')
 
 
+  describe ('isVisible', () => {
+
+    it('should return false for a `display: none` element', () => {
+      testContainerElement.innerHTML = `<input style="display: none">`;
+      let input = testContainerElement.querySelector('input') as HTMLElement;
+
+      expect(checker.isVisible(input))
+        .toBe(false, 'Expected element with `display: none` to not be visible');
+    }); // it('should return false for a `display: none` element')
+
+
+    it('should return false for the child of a `display: none` element', () => {
+      testContainerElement.innerHTML =
+        `<div style="display: none;">
+            <input>
+         </div>
+        `;
+      let input = testContainerElement.querySelector('input') as HTMLElement;
+
+      expect(checker.isVisible(input))
+        .toBe(false, 'Expected element with `display: none` parent to not be visible');
+
+    }); // it('should return false for the child of a `display: none` element)
+
+
+    it('should return false for a `visibility: hidden` element', () => {
+
+      testContainerElement.innerHTML =
+        `<input style="visibility: hidden;"`;
+      
+      let input = testContainerElement.querySelector('input') as HTMLElement;
+
+      expect(checker.isVisible(input))
+        .toBe(false, 'Expected element with `visibility: hidden` to not be visible');
+
+    }); // it('should return false for a `visibility: hidden` element')
+
+
+    it('should return false for the child of a `visibility: hidden` element', () => {
+      
+      testContainerElement.innerHTML =
+        `<div style="visibility: hidden;">
+          <input>
+         </div>
+        `;
+      let input = testContainerElement.querySelector('input') as HTMLElement;
+
+      expect(checker.isVisible(input))
+        .toBe(false, 'Expected element with `visibility: hidden` parent to not be visible');
+
+    }); // it('should return false for the child of a `visibility: hidden` element')
+
+
+    it('should return true for an element with `visibility: hidden` ancestor and *closer* ' +
+        '`visibility: visible` ancestor', () => {
+
+      testContainerElement.innerHTML =
+        `<div style="visibility: hidden;">
+           <div style="visibility: visible;">
+             <input> 
+           </div>
+         </div>`;
+      let input = testContainerElement.querySelector('input') as HTMLElement;
+
+      expect(checker.isVisible(input))
+        .toBe(true, 'Expected element with `visibility: hidden` ancestor and closer ' +
+              '`visibility: visible` ancestor to be visible');
+
+    }); // it()
+
+
+    it('should return true for an element without visibility modifiers', () => {
+
+      let input = document.createElement('input');
+      testContainerElement.appendChild(input);
+
+      expect(checker.isVisible(input))
+        .toBe(true, 'Expected element without visibility modifiers to be visible');
+
+    }); // it('should return true for an element without visibility modifiers')
+
+  }); // describe('isVisible')
+
+
+  describe('isFocusable', () => {
+
+    
+
+
+  }); // describe('isFocusable')
+
+
+
+  describe('isTabbable', () => {
+
+    
+
+  }); // describe('isTabbable')
 
 
 
