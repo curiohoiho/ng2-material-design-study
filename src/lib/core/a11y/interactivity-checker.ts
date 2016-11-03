@@ -18,6 +18,7 @@ export class InteractivityChecker
 {
   /**
    * Gets whether an element is disabled.
+   * a_element.hasAttribute('disabled')
    */
   isDisabled(a_element: HTMLElement): boolean
   {
@@ -31,9 +32,12 @@ export class InteractivityChecker
   /**
    * Gets whether an element is visible for the purpose of interactivity.
    * 
-   * This will capture states like `display: none` and `visibility: hidden`, but not
-   * things like being clipped by an `overflow: hidden` parent or 
+   * This will capture states like `display: none` and `visibility: hidden`, 
+   * but not things like being clipped by an `overflow: hidden` parent or 
    * being outside the viewport.
+   * 
+   * Check offsetHeight, offsetWidth, .getClientRects().length, 
+   * getComputedStyle(a_element).getPropertyValue('visibility')
    */
   isVisible(a_element: HTMLElement): boolean
   {
@@ -87,6 +91,7 @@ export class InteractivityChecker
 
 /**
  * Gets whether an element is a native form element.
+ * This includes: input, select, button, textarea 
  */
 function isNativeFormElement(a_element: Node)
 {
@@ -100,7 +105,7 @@ function isNativeFormElement(a_element: Node)
 
 
 /**
- * Gets whether an element is an <input type="hidden">.
+ * Gets whether a_element.type = "hidden" - is an <input type="hidden">.
  */
 function isHiddenInput(a_element: HTMLElement): boolean
 {
@@ -111,6 +116,7 @@ function isHiddenInput(a_element: HTMLElement): boolean
 
 /**
  * Gets whether an element is an anchor that has an href attribute.
+ * USes a_element.hasAttribute()
  */
 function isAnchorWithHref(a_element: HTMLElement): boolean
 {
@@ -120,6 +126,7 @@ function isAnchorWithHref(a_element: HTMLElement): boolean
 
 /**
  * Gets whether an element is an input element.
+ * Checks a_element.nodeName == "input"
  */
 function isInputElement(a_element: HTMLElement): a_element is HTMLInputElement
 {
@@ -129,6 +136,7 @@ function isInputElement(a_element: HTMLElement): a_element is HTMLInputElement
 
 /**
  * Gets whether an element is an anchor element.
+ * Checks a_element.nodeName.toLowerCase('a')
  */
 function isAnchorElement(a_element: HTMLElement): boolean 
 {
@@ -138,6 +146,7 @@ function isAnchorElement(a_element: HTMLElement): boolean
 
 /**
  * Gets whether an element has a valid tabIndex.
+ * a_element.getAttribute('tabindex')
  */
 function hasValidTabIndex(a_element: HTMLElement): boolean
 {
