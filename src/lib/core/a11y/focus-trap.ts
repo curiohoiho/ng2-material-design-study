@@ -91,6 +91,8 @@ export class FocusTrap
 
   /**
    * Get the last tabbable element from a DOM subtree (inclusive).
+   * First check if a_root isTabbable.
+   * If not, move on to his children.
    */
   private _getLastTabbableElement(a_root: HTMLElement): HTMLElement
   {

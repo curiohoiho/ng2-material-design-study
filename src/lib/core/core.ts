@@ -77,7 +77,7 @@ export { InteractivityChecker } from './a11y/interactivity-checker';*/
 /*export { ComponentType } from './overlay/generic-component-type';*/
 
 // Keybindings
-/*export * from './keyboard/keycodes';*/
+export * from './keyboard/keycodes';
 
 /*export * from './compatibility/style-compatibility';*/
 
