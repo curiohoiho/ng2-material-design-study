@@ -181,7 +181,9 @@ export function execNodeTask(
       }
       else 
       {
-        // forward to execTask
+        // execute the node binary within a new child process using spawn.
+        // the binary needs to be 'node' because on windows the shell cannot determine the correct
+        // interpreter from the shebang
         execTask(binPath, args, options)(done);
       }
     }); // resolveBin()
