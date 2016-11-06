@@ -8,7 +8,7 @@ import { Subject } from 'rxjs/Subject';
  * This is the interface for focusable items (used by the ListKeyManager).
  * Each item must know how to focus itself and whether or not it is currently disabled.
  */
-export interface MdFocusable
+export interface IMdFocusable
 {
   focus() : void;
   disabled?: boolean;
@@ -23,12 +23,13 @@ export class ListKeyManager
   private f_focusedItemIndex: number;
   private f_tabOut$: Subject<any> = new Subject();
 
-  constructor(private f_items: QueryList<MdFocusable>) { }
+  constructor(private f_qylst_items: QueryList<IMdFocusable>) { }
 
   get tabOut(): Observable<void>
   {
     return this.f_tabOut$.asObservable();
   } // get tabOut()
+
 
   set focusedItemIndex(value: number)
   {
@@ -36,7 +37,7 @@ export class ListKeyManager
   }
 
 
-  onKeyDown(a_event: KeyboardEvent): void
+  onKeydown(a_event: KeyboardEvent): void
   {
     if (a_event.keyCode === DOWN_ARROW)
     {
@@ -56,18 +57,18 @@ export class ListKeyManager
 
   private f_focusNextItem(): void 
   {
-    const ay_items = this.f_items.toArray();
-    this.f_updateFocusedItemIndex(1, ay_items);
-    ay_items[this.f_focusedItemIndex].focus();
+    const ay_focusable_items = this.f_qylst_items.toArray();
+    this.f_updateFocusedItemIndex(1, ay_focusable_items);
+    ay_focusable_items[this.f_focusedItemIndex].focus();
 
   } // f_focusNextItem()
 
 
   private f_focusPreviousItem(): void 
   {
-    const ay_items = this.f_items.toArray();
-    this.f_updateFocusedItemIndex(-1, ay_items);
-    ay_items[this.f_focusedItemIndex].focus();
+    const ay_focusable_items = this.f_qylst_items.toArray();
+    this.f_updateFocusedItemIndex(-1, ay_focusable_items);
+    ay_focusable_items[this.f_focusedItemIndex].focus();
     
   } // f_focusPreviousItem()
 
@@ -78,21 +79,23 @@ export class ListKeyManager
    * continue to move down the list until it finds an item that is not disabled,
    * and it will wrap it it encounters either end of the list.
    * 
+   * The whole point is to set this.f_focusedItemIndex to the next focusable number.
+   * So there is no return value.
    * @param delta the desired change in focus index.
    */
-  private f_updateFocusedItemIndex(a_delta: number, a_ay_items: MdFocusable[])
+  private f_updateFocusedItemIndex(a_delta: number, a_ay_focusable_items: IMdFocusable[]): void 
   {
     // when focus would leave menu, wrap to beginning or end
     // for example: 5 + 1 (delta) + 8 (items length) = 14 % 8 = 6
     //              7 + 3 (delta) + 8 (items length) = 18 % 8 = 2 (wrapped around to the start) 
     this.f_focusedItemIndex =
-      (this.f_focusedItemIndex + a_delta + a_ay_items.length) % a_ay_items.length;
+      (this.f_focusedItemIndex + a_delta + a_ay_focusable_items.length) % a_ay_focusable_items.length;
     
     // skip all disabled menu items recursively until an active one
     // is reached, or the menu closes for over-reaching bounds
-    while (a_ay_items[this.f_focusedItemIndex].disabled)
+    while (a_ay_focusable_items[this.f_focusedItemIndex].disabled)
     {
-      this.f_updateFocusedItemIndex(a_delta, a_ay_items); 
+      this.f_updateFocusedItemIndex(a_delta, a_ay_focusable_items); 
     }    
 
   } // f_updateFocusedItemIndex()
