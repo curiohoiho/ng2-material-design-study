@@ -102,13 +102,13 @@ export class GlobalPositionStrategy implements IPositionStrategy
    * centers the overlay horizontally with an optional offset.
    * clears any previously set horizontal position.
    */
-  centerHorizonally(a_s_offset: string = '0px'): GlobalPositionStrategy 
+  centerHorizontally(a_s_offset: string = '0px'): GlobalPositionStrategy 
   {
     this._s_left = '50%';
     this._s_right = '';
     this._ay_s_translateX = ['-50%', a_s_offset];
     return this;
-  } // centerHorizonally()
+  } // centerHorizontally()
 
 
   /**
