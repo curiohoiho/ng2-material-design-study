@@ -111,6 +111,13 @@ export class ConnectedPositionStrategy implements IPositionStrategy
       let overlayPoint = this.f_getOverlayPoint(originPoint, overlayRect, pos);
       firstOverlayPoint = firstOverlayPoint || overlayPoint;
 
+      // if the overlay in the calculated position fits on-screen, put it there and we're done 
+      if (this.f_willOverlayFitWininViewport(overlayPoint, overlayRect, viewportRect))
+      {
+        this.f_setElementPosition(a_element_overlay, overlayPoint);
+        return Promise.resolve(null);
+      }
+
     } // for
 
 
@@ -155,6 +162,51 @@ export class ConnectedPositionStrategy implements IPositionStrategy
 
 
   /**
+   * gets the (x, y) coordinate of the top-left corner of the overlay given a given position and 
+   * origin point to which the overlay should be connected.
+   */
+  private f_getOverlayPoint(
+    a_originPoint: Point,
+    a_overlayRect: ClientRect,
+    a_pos: ConnectionPositionPair): Point 
+  {
+    // calculate the (overlayStartX, overlayStartY), the start of the potential
+    // overlay position relative to the origin point.
+    let overlayStartX: number;
+    if (a_pos.overlayX == 'center')
+    {
+      overlayStartX = -a_overlayRect.width / 2;
+    }
+    else if (a_pos.overlayX === 'start')
+    {
+      overlayStartX = this.f_isRtl ? -a_overlayRect.width : 0;
+    }
+    else // end 
+    {
+      overlayStartX = this.f_isRtl ? 0 : -a_overlayRect.width;
+    }
+
+    let overlayStartY: number;
+    if (a_pos.overlayY == 'center')
+    {
+      overlayStartY = -a_overlayRect.height / 2;
+    }
+    else
+    {
+      overlayStartY = a_pos.overlayY == 'top' ? 0 : -a_overlayRect.height;
+    }
+
+    return {
+      x: a_originPoint.x + overlayStartX + this.f_n_offsetX,
+      y: a_originPoint.y + overlayStartY + this.f_n_offsetY
+    };
+
+  } // f_getOverlayPoint()
+
+
+
+
+  /**
    * gets the horizontal (x) "start" dimension based on whether
    * the overlay is in an RTL context.
    */
@@ -164,13 +216,23 @@ export class ConnectedPositionStrategy implements IPositionStrategy
   }
 
   /**
-   * Gets the horizontal (x) "end" dimension based on whether the overlay is in an RTL context.
+   * Gets the horizontal (x) "end" dimension based on whether 
+   * the overlay is in an RTL context.
    * @param rect
    */
   private f_getEndX(a_rect: ClientRect): number
   {
     return this.f_isRtl ? a_rect.left : a_rect.right;
   }
+
+
+  private f_willOverlayFitWininViewport(
+
+  ): boolean 
+  {
+
+
+  } // f_willOverlayFitWininViewport(0)
 
 
 } // class ConnectedPositionStrategy
