@@ -1,3 +1,16 @@
+/**
+ * 1.  given an origin element and an overlay.
+ * 2.  apply() updates the position of the overlay element.
+ * 2a. get the ClientRects for the origin and overlay (sizes)
+ * 2b. find the preferred position for the overlay.
+ * 2ba. get the (x, y) point of connection at the origin,
+ *      f_getOriginConnectionPoint().
+ * 2bb. use this originPoint to get the overlayPoint,
+ *      f_getOverlayPoint().
+ * 2bc. if it fits in the viewport, f_willOverlayFitWininViewport(),
+ *      put it there using the css transform.      
+ */
+
 import { IPositionStrategy } from './position-strategy';
 import { ElementRef } from '@angular/core';
 import { ViewportRuler } from './viewport-ruler';
@@ -60,6 +73,10 @@ export class ConnectedPositionStrategy implements IPositionStrategy
     private f_viewportRuler: ViewportRuler)
   {
     this.f_origin = this.f_connectedTo.nativeElement;
+    
+    // each `yyyPos` is made up of a HorizontalConnectionPos 
+    // and a VerticalConnectionPos,
+    // each of those being strings.
     this.withFallbackPosition(f_originPos, f_overlayPos);
 
   } // constructor()
@@ -119,7 +136,6 @@ export class ConnectedPositionStrategy implements IPositionStrategy
       }
 
     } // for
-
 
   } // apply() - updates the position of the overlay
 
@@ -204,6 +220,34 @@ export class ConnectedPositionStrategy implements IPositionStrategy
   } // f_getOverlayPoint()
 
 
+  /**
+   * sets the layout direction so the overlay's position can be adjusted to match
+   */
+  withDirection(a_dir: 'lrt' | 'rtl'): this 
+  {
+    this.f_s_dir = a_dir;
+    return this;
+  }
+
+
+  /**
+   * sets an offset for the overlay's connection point on the x-axis.
+   */
+  withOffsetX(a_n_offset: number): this
+  {
+    this.f_n_offsetX = a_n_offset;
+    return this;
+  }
+
+
+  /**
+   * sets an offset for the overlay's connection point on the y-axis 
+   */
+  withOffsetY(a_n_offset: number): this 
+  {
+    this.f_n_offsetY = a_n_offset;
+    return this;
+  }
 
 
   /**
@@ -227,13 +271,38 @@ export class ConnectedPositionStrategy implements IPositionStrategy
 
 
   private f_willOverlayFitWininViewport(
-
-  ): boolean 
+    a_overlayPoint: Point,
+    a_overlayRect: ClientRect,
+    a_viewportRect: ClientRect): boolean 
   {
+    // @todo: probably also want some space between overlay edge and viewport edge.
+    return (
+      a_overlayPoint.x                        >= a_viewportRect.left &&
+      a_overlayPoint.x + a_overlayRect.width  <= a_viewportRect.right &&
+      a_overlayPoint.y                        >= a_viewportRect.top &&
+      a_overlayPoint.y + a_overlayRect.height <= a_viewportRect.bottom
+    );
+
+  } // f_willOverlayFitWininViewport()
 
 
-  } // f_willOverlayFitWininViewport(0)
+  /**
+   * physically positions the overlay element to the given coordinate.
+   */
+  private f_setElementPosition(
+    a_element_overlay: HTMLElement,
+    a_overlayPoint: Point): void 
+  {
+    let scrollPos = this.f_viewportRuler.getViewportScrollPosition();
 
+    let x = a_overlayPoint.x + scrollPos.left;
+    let y = a_overlayPoint.y + scrollPos.top;
+
+    // @todo: we don't want to always overwrite the transform property here,
+    // because it will need to be used for animations.
+    applyCssTransform(a_element_overlay, `translate(${x}px) translateY(${y}px)`);
+
+  } // f_setElementPosition()
 
 } // class ConnectedPositionStrategy
 
