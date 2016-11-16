@@ -145,8 +145,6 @@ export class GlobalPositionStrategy implements IPositionStrategy
 
     return Promise.resolve(null);
 
-
-
   } // apply()
 
 
@@ -159,9 +157,5 @@ export class GlobalPositionStrategy implements IPositionStrategy
     return a_ay_s_values.map( t => `${a_s_translateFn}(${t})`).join(' ');
 
   } // _reduceTranslateValues()
-
-
-
-
 
 } // class GlobalPositionStrategy
