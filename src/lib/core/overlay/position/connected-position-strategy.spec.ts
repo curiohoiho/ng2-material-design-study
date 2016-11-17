@@ -183,9 +183,57 @@ describe('ConnectedPositionStrategy', () => {
 
 
     it('should reposition the overlay if it would go off the bottom of the screen', () => {
+      // use the fake viewport ruler because we don't know exactly how big the viewport is 
+      fakeViewportRuler.fakeRect = {
+        top: 0, left: 0, width: 500, height: 500, right: 500, bottom: 500
+      };
 
+      positionBuilder = new OverlayPositionBuilder(fakeViewportRuler);
+
+      originElement.style.top = '475px';
+      originElement.style.left = '200px';
+      originRect = originElement.getBoundingClientRect();
+
+      strategy = positionBuilder.connectedTo(
+        fakeElementRef,
+        {originX: 'start', originY: 'bottom'},
+        {overlayX: 'start', overlayY: 'top'})
+      .withFallbackPosition(
+        {originX: 'end', originY: 'top'},
+        {overlayX: 'end', overlayY: 'bottom'}
+      );
+      
+      strategy.apply(overlayElement);
+
+      let overlayRect = overlayElement.getBoundingClientRect();
+      expect(overlayRect.bottom).toBe(originRect.top);
+      expect(overlayRect.right).toBe(originRect.right);
 
     }); // it('should reposition the overlay if it would go off the bottom of the screen')
+
+
+    it('should reposition the overlay if it would go off the right of the screen', () => {
+      // Use the fake viewport ruler because we don't know *exactly* how big the viewport is.
+      fakeViewportRuler.fakeRect = {
+        top: 0, left: 0, width: 500, height: 500, right: 500, bottom: 500
+      };
+      positionBuilder = new OverlayPositionBuilder(fakeViewportRuler);
+
+      originElement.style.top = "200px";
+      originElement.style.left = '475px';
+      originRect = originElement.getBoundingClientRect();
+
+      strategy = positionBuilder.connectedTo(
+        fakeElementRef,
+        {originX: 'end', originY: 'center'},
+        {overlayX: 'start', overlayY: 'center'}
+      ).withFallbackPosition(
+        {originX: 'start', originY: 'bottom'},
+        {overlayX: 'end', overlayY: 'top'}
+      );
+
+    }); // it('should reposition the overlay if it would go off the right of the screen')
+
 
   }); // describe('when near viewport edge')
 
