@@ -116,10 +116,78 @@ describe('ConnectedPositionStrategy', () => {
       document.body.removeChild(veryLargeElement);
       document.body.scrollTop = 0;
       document.body.scrollLeft = 0;
-
     }); // afterEach()
 
+    // Preconditions are set, now just run the full set of simple position tests.
+    runSimplePositionTests();
+
   }); // describe('when scrolled')
+
+
+  describe('when near viewport edge', () => {
+
+    it('should reposition the overlay if it would go off the top of the screen', () => {
+      /**
+       * we can use the real ViewportRuler in this test since we know that sero is
+       * always the top of the viewport.
+       */
+
+      originElement.style.top = '5px';
+      originElement.style.left = '200px';
+      originRect = originElement.getBoundingClientRect();
+
+      strategy = positionBuilder.connectedTo(
+        fakeElementRef,
+        {originX: 'end', originY: 'top'},
+        {overlayX: 'start', overlayY: 'bottom'}
+      ).withFallbackPosition(
+        { originX: 'start', originY: 'bottom'},
+        { overlayX: 'start', overlayY: 'top'}
+      );
+
+      strategy.apply(overlayElement);
+
+      let overlayRect = overlayElement.getBoundingClientRect();
+      expect(overlayRect.top).toBe(originRect.bottom);
+      expect(overlayRect.left).toBe(originRect.left);
+
+    }); // it('should reposition the overlay if it would go off the top of the screen')
+
+
+    it('should reposition the overlay if it would go off the left of the screen', () => {
+      /**
+       * we can use the real ViewportRuler in this test since we know that zero is
+       * always the left edge of the viewport.
+       */
+
+      originElement.style.top = '200px';
+      originElement.style.left = '5px';
+      originRect = originElement.getBoundingClientRect();
+      originCenterY = originRect.top + (ORIGIN_HEIGHT / 2);
+
+      strategy = positionBuilder.connectedTo(
+        fakeElementRef,
+        {originX: 'start', originY: 'bottom'},
+        {overlayX: 'end', overlayY: 'top'})
+        .withFallbackPosition(
+          {originX: 'end', originY: 'center'},
+          {overlayX: 'start', overlayY: 'center'});
+      
+      strategy.apply(overlayElement);
+
+      let overlayRect = overlayElement.getBoundingClientRect();
+      expect(overlayRect.top).toBe(originCenterY - (OVERLAY_HEIGHT / 2));
+      expect(overlayRect.left).toBe(originRect.right);
+
+    }); // it('should reposition the overlay if it would go off the left of the screen')
+
+
+    it('should reposition the overlay if it would go off the bottom of the screen', () => {
+
+
+    }); // it('should reposition the overlay if it would go off the bottom of the screen')
+
+  }); // describe('when near viewport edge')
 
 
 }); // describe('ConnectedPositionStrategy')
