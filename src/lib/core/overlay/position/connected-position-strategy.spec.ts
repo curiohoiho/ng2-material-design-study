@@ -46,7 +46,80 @@ describe('ConnectedPositionStrategy', () => {
 
   }); // beforeEach()
 
+  afterEach( () => {
 
+    document.body.removeChild(originElement);
+    document.body.removeChild(overlayElement);
+
+    // reset the origin geometry after each test so we don't accidently keep state between tests.
+    originRect = null;
+    originCenterX = null;
+    originCenterY = null;
+
+  }); // afterEach()
+
+
+  describe('when not near viewport edge, not scrolled', () => {
+
+    /**
+     * place the original element close to the center of the window.
+     * (1024 / 2, 768 / 2).  It's not exact, since outerWidth/Height includes browser
+     * chrome, but it doesn't really matter for these tests.
+     */
+    const ORIGIN_LEFT = 500;
+    const ORIGIN_TOP = 350;
+
+    beforeEach( () => {
+      originElement.style.left = `${ORIGIN_LEFT}px`;
+      originElement.style.top  = `${ORIGIN_TOP}px`;
+
+      originRect = originElement.getBoundingClientRect();
+      originCenterX = originRect.left + (ORIGIN_WIDTH / 2);
+      originCenterY = originRect.top  + (ORIGIN_HEIGHT / 2);
+    }); // beforeEach()
+
+    // preconditions are set, now just run the full set of simple position tests.
+    runSimplePositionTests();
+
+  }); // describe('when not near viewport edge, not scrolled')
+
+
+  describe('when scrolled', () => {
+    // place the original element decently far outside the unscrolled document (1024x768).
+    const ORIGIN_LEFT = 2500;
+    const ORIGIN_TOP  = 2500;
+
+    // create a very large element that will make the page scrollable.
+    let veryLargeElement: HTMLElement = document.createElement('div');
+    veryLargeElement.style.width = '4000px';
+    veryLargeElement.style.height = '4000px';
+
+    beforeEach( () => {
+      /** 
+       * scroll the page such that the origin element is roughly in the 
+       * center of the visible viewport (2500 - 1024/2, 2500 - 768/2).
+       */
+      document.body.appendChild(veryLargeElement);
+      document.body.scrollTop  = 2100;
+      document.body.scrollLeft = 2100;
+
+      originElement.style.top  = `${ORIGIN_TOP}px`;
+      originElement.style.left = `${ORIGIN_LEFT}px`;
+
+      originRect    = originElement.getBoundingClientRect();
+      originCenterX = originRect.left + (ORIGIN_WIDTH  / 2);
+      originCenterY = originRect.top  + (ORIGIN_HEIGHT / 2); 
+
+    }); // beforeEach()
+
+    afterEach( () => {
+      document.body.removeChild(veryLargeElement);
+      document.body.scrollTop = 0;
+      document.body.scrollLeft = 0;
+
+    }); // afterEach()
+
+  }); // describe('when scrolled')
 
 
 }); // describe('ConnectedPositionStrategy')
