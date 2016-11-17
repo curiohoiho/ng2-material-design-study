@@ -232,6 +232,12 @@ describe('ConnectedPositionStrategy', () => {
         {overlayX: 'end', overlayY: 'top'}
       );
 
+      strategy.apply(overlayElement);
+
+      let overlayRect = overlayElement.getBoundingClientRect();
+      expect(overlayRect.top).toBe(originRect.bottom);
+      expect(overlayRect.right).toBe(originRect.left);
+
     }); // it('should reposition the overlay if it would go off the right of the screen')
 
 
