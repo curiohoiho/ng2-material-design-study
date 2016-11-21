@@ -175,3 +175,94 @@ export interface IPortalHost
   hasAttached(): boolean;
 
 } // interface IPortalHost
+
+
+/**
+ * Partial implementation of PortalHost that only deals with attaching either a
+ * ComponentPortal or a TemplatePortal.
+ */
+export abstract class BasePortalHost implements IPortalHost
+{
+  /**
+   * The portal currently attached to the host.
+   */
+  private f_attachedPortal: Portal<any>;
+
+  /** A function that will permanently dispose this host. */
+  private f_disposeFn: () => void;
+
+  /** Whether this host has alreadt been permanently disposed. */
+  private f_isDisposed: boolean = false;
+
+  /** Whether this host has an attached portal. */
+  hasAttached()
+  {
+    return this.f_attachedPortal != null;
+  } 
+
+
+  attach(a_portal: Portal<any>): any 
+  {
+    if (a_portal == null) {
+      throw new MdNullPortalError();
+    }
+
+    if (this.hasAttached()) {
+      throw new MdPortalAlreadyAttachedError();
+    }
+
+    if (this.f_isDisposed) {
+      throw new MdPortalHostAlreadyDisposedError();
+    }
+
+    if (a_portal instanceof ComponentPortal) {
+      this.f_attachedPortal = a_portal;
+      return this.attachComponentPortal(a_portal);
+    } else if (a_portal instanceof TemplatePortal) {
+      this.f_attachedPortal = a_portal;
+      return this.attachTemplatePortal(a_portal);
+    }
+
+    throw new MdUnknownPortalTypeError();
+
+  } // attach()
+
+
+  abstract attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T>;
+
+  abstract attachTemplatePortal(portal: TemplatePortal): Map<string, any>;
+
+  detach(): void
+  {
+    if (this.f_attachedPortal)
+    {
+      this.f_attachedPortal.setAttachedHost(null);
+    }
+
+    this.f_attachedPortal = null;
+    if (this.f_disposeFn != null)
+    {
+      this.f_disposeFn();
+      this.f_disposeFn = null;
+    }
+
+  } // detach()
+
+  dispose()
+  {
+    if (this.hasAttached())
+    {
+      this.detach();
+    }
+
+    this.f_isDisposed = true;
+
+  } // dispose()
+
+
+  setDisposeFn(a_fn: () => void)
+  {
+    this.f_disposeFn = a_fn;
+  }
+
+} // abstract class BasePortalHost
