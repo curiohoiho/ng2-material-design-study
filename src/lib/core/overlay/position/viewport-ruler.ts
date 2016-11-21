@@ -50,7 +50,9 @@ export class ViewportRuler
    * Gets the (top, left) scroll position of the viewport.
    * @param documentRect 
    */
-  getViewportScrollPosition(a_documentRect = document.documentElement.getBoundingClientRect())
+  getViewportScrollPosition(
+    a_documentRect = document.documentElement.getBoundingClientRect())
+    : { top: number, left: number }
   {
     /**
      * the top-left-corner of the viewport is determined by the scroll position of the document
@@ -73,7 +75,5 @@ export class ViewportRuler
     return { top, left};
 
   } // getViewportScrollPosition()
-
-
 
 } // class ViewportRuler
