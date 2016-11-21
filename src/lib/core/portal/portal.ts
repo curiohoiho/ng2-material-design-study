@@ -115,8 +115,46 @@ export class ComponentPortal<T> extends Portal<ComponentRef<T>>
  */
 export class TemplatePortal extends Portal<Map<string, any>>
 {
+  /**
+   * The embedded template that will be used to instantiate an embedded View in the host.
+   */
+  templateRef: TemplateRef<any>;
 
+  /**
+   * Reference to the ViewContainer into which the template will be stamped out.
+   */
+  viewContainerRef: ViewContainerRef;
 
+  /**
+   * Additional locals for the instantiated embedded view.
+   * These locals can be seens as "exports" for the template, such as how
+   * ngFor has index / event / odd.
+   */
+  locals: Map<string, any> = new Map<string, any>();
+
+  constructor(template: TemplateRef<any>, viewContainerRef: ViewContainerRef) 
+  {
+    super();
+    this.templateRef = template;
+    this.viewContainerRef = viewContainerRef;
+  }
+
+  get origin(): ElementRef
+  {
+    return this.templateRef.elementRef;
+  }
+
+  attach(a_host: IPortalHost, locals?: Map<string, any>): Map<string, any>
+  {
+    this.locals = locals == null ? new Map<string, any>() : locals;
+    return super.attach(a_host);
+  }
+
+  detach(): void 
+  {
+    this.locals = new Map<string, any>();
+    return super.detach();
+  }
 
 }  // class TemplatePortal
 
