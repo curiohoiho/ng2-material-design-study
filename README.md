@@ -4,7 +4,7 @@
 [![Gitter](https://badges.gitter.im/angular/material2.svg)](https://gitter.im/angular/material2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 This is the home for the Angular team's Material Design components built on top of Angular 2.
-
+  
 #### Quick links
 [Google group](https://groups.google.com/forum/#!forum/angular-material2),
 [Contributing](https://github.com/angular/material2/blob/master/CONTRIBUTING.md),
