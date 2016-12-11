@@ -6,6 +6,7 @@ import {
   // PortalModule,
   // OverlayModule,
   // A11yModule,
+  // ProjectionModule,
   // StyleCompatibilityModule
 } from './core/index';
 
@@ -31,8 +32,11 @@ import {
 // import {MdTooltipModule} from './tooltip/index';
 // import {MdMenuModule} from './menu/index';
 // import {MdDialogModule} from './dialog/index';
+// import { PlatformModule } from './core/platform/platform';
+// import { MdAutocompleteModule } from './autocomplete/index';
 
 const MATERIAL_MODULES: any[] = [ // @todo: fix this type
+  // MdAutocompleteModule,
   // MdButtonModule,
   // MdButtonToggleModule,
   // MdCardModule,
@@ -59,12 +63,15 @@ const MATERIAL_MODULES: any[] = [ // @todo: fix this type
   // PortalModule,
   // RtlModule,
   // A11yModule,
+  // PlatformModule,
+  // ProjectionModule,
   // StyleCompatibilityModule,
 ];
 
 
 @NgModule({
   imports: [
+    // MdAutocompleteModule.forRoot(),
     // MdButtonModule.forRoot(),
     // MdCardModule.forRoot(),
     // MdCheckboxModule.forRoot(),
@@ -79,6 +86,7 @@ const MATERIAL_MODULES: any[] = [ // @todo: fix this type
     // MdTabsModule.forRoot(),
     // MdToolbarModule.forRoot(),
     // PortalModule.forRoot(),
+    // ProjectionModule.forRoot(),
     // RtlModule.forRoot(),
 
     // These modules include providers.
@@ -92,6 +100,7 @@ const MATERIAL_MODULES: any[] = [ // @todo: fix this type
     // MdSlideToggleModule.forRoot(),
     // MdSnackBarModule.forRoot(),
     // MdTooltipModule.forRoot(),
+    // PlatformModule.forRoot(),
     // OverlayModule.forRoot(),
     // StyleCompatibilityModule.forRoot(),
   ],
