@@ -1,5 +1,12 @@
-import { Component, ViewEncapsulation, ViewChild, ElementRef } from '@angular/core';
+import { 
+  Component, 
+  ViewEncapsulation, 
+  ViewChild, 
+  ElementRef,
+  Input,
+  NgZone } from '@angular/core';
 import { InteractivityChecker } from './interactivity-checker';
+import { coerceBooleanProperty } from '../coercion/boolean-property';
 
 
 /**
@@ -19,11 +26,7 @@ import { InteractivityChecker } from './interactivity-checker';
 @Component({
   moduleId: module.id,
   selector: 'focus-trap',
-  template: `
-  <div tabindex="0" (focus)="focusLastTabbableElement()"></div>
-  <div #trappedContent><ng-content></ng-content></div>
-  <div tabindex="0" (focus)="focusFirstTabbableElement()"></div>
-  `,
+  templateUrl: 'focus-trap.html',
   encapsulation: ViewEncapsulation.None
 })
 export class FocusTrap

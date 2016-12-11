@@ -62,6 +62,7 @@ export class ViewportRuler
      * of `document.documentElement' works consistently, where the `top` and `left` values 
      * will equal negative the scroll position.  
      */
+    /* 
     const top = a_documentRect.top < 0 &&
                 document.body.scrollTop == 0
                 ? -a_documentRect.top
@@ -71,7 +72,10 @@ export class ViewportRuler
                  document.body.scrollLeft == 0
                  ? -a_documentRect.left
                  : document.body.scrollLeft;
-    
+    */
+    const top = -a_documentRect.top || document.body.scrollTop || window.scrollY || 0;
+    const left = -a_documentRect.left || document.body.scrollLeft || window.scrollX || 0;
+
     return { top, left};
 
   } // getViewportScrollPosition()

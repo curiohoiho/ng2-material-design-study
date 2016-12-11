@@ -11,5 +11,10 @@ export class RelativePositionStrategy implements IPositionStrategy
     return null;
   }
 
+  dispose() 
+  {
+    // not yet implemented
+  }
+
 
 } // class RelativePositionStrategy
