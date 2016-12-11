@@ -1,3 +1,4 @@
+import { NgZone } from '@angular/core';
 import { IPortalHost, Portal } from '../portal/portal';
 import { OverlayState } from './overlay-state';
 import { Observable } from 'rxjs/Observable';
@@ -15,8 +16,17 @@ export class OverlayRef implements IPortalHost
   constructor(
     private f_portalHost: IPortalHost,
     private f_pane: HTMLElement,
-    private f_overlayState: OverlayState
+    private f_overlayState: OverlayState,
+    private _ngZone: NgZone
   ) {}
+
+  /**
+   * The overlay's HTML element.
+   */
+  get overlayElement(): HTMLElement
+  {
+    return this.f_pane;
+  }
 
 
   /** */
@@ -45,6 +55,10 @@ export class OverlayRef implements IPortalHost
 
   dispose(): void 
   {
+    if (this.f_overlayState.positionStrategy)
+    {
+      this.f_overlayState.positionStrategy.dispose();
+    }
     this.f_detachBackdrop();
     this.f_portalHost.dispose();
   }
@@ -88,12 +102,28 @@ export class OverlayRef implements IPortalHost
   {
     if (this.f_overlayState.width || this.f_overlayState.width === 0)
     {
-      this.f_pane.style.width = formatCssUnit(this.f_overlayState.height);
+      this.f_pane.style.width = formatCssUnit(this.f_overlayState.width);
     }
+
+    if (this.f_overlayState.height || this.f_overlayState.height === 0)
+    {
+      this.f_pane.style.height = formatCssUnit(this.f_overlayState.height);
+    }
+
+    if (this.f_overlayState.minWidth || this.f_overlayState.minWidth === 0)
+    {
+      this.f_pane.style.minWidth = formatCssUnit(this.f_overlayState.minWidth);
+    }
+
+    if (this.f_overlayState.minHeight || this.f_overlayState.minHeight === 0)
+    {
+      this.f_pane.style.minHeight = formatCssUnit(this.f_overlayState.minHeight);
+    }
+
   } // updateSize()
 
 
-  /** attaches a backdrop for this overlay. */
+  /** Attaches a backdrop for this overlay. */
   private f_attachBackdrop(): void 
   {
     // create an overlay-backdrop element.  append to the parent of the origin element.
@@ -113,7 +143,11 @@ export class OverlayRef implements IPortalHost
 
     // add class to fade-in the backdrop after one frame
     requestAnimationFrame( () => { 
-      this.f_backdropElement.classList.add('md-overlay-backdrop-showing');
+      // this.f_backdropElement.classList.add('md-overlay-backdrop-showing');
+      if (this.f_backdropElement)
+      {
+        this.f_backdropElement.classList.add('md-overlay-backdrop-showing');
+      }
     });
 
   } // f_attachBackdrop()
@@ -127,25 +161,42 @@ export class OverlayRef implements IPortalHost
     
     if (backdropToDetach)
     {
-      backdropToDetach.classList.remove('md-overlay-backdrop-showing');
-      backdropToDetach.classList.remove(this.f_overlayState.backdropClass);
+      let finishDetach = () => {
+        // it may not be attaced to anything in certain cases (e.g. unit tests)
+        if (backdropToDetach && backdropToDetach.parentNode)
+        {
+          backdropToDetach.parentNode.removeChild(backdropToDetach);
+        }
 
-      // add transitionend event listener
-      backdropToDetach.addEventListener('transitionend', () => { 
-        backdropToDetach.parentNode.removeChild(backdropToDetach);
-
-        /**
-         * it is possible that a new portal has been attached to this overlay since we started
-         * removing the backdrop.  If that is the case, only clear the backdrop reference if it
-         * is still the same instance that we started to remove.
-         */
+        // It is possible that a new portal has been attached to this 
+        // overlay since we started removing the backdrop. 
+        // If that is the case, only clear the backdrop reference if it
+        // is still the same instance that we started to remove.
         if (this.f_backdropElement == backdropToDetach)
         {
           this.f_backdropElement = null;
         }
+      }; // finishDetach()
 
-      }); // addEventListener(transitionend)    
-    
+
+      backdropToDetach.classList.remove('md-overlay-backdrop-showing');
+      backdropToDetach.classList.remove(this.f_overlayState.backdropClass);
+      backdropToDetach.addEventListener('transitioned', finishDetach);
+
+      // If the backdrop doesn't have a transition, the 
+      // `transitionend` event won't fire.
+      // In this case we make it unclickable and we try to remove it 
+      // after a delay.
+      backdropToDetach.style.pointerEvents = 'none';
+
+      // Run this outside the Angular zone because there's nothing 
+      // that Angular cares about.
+      // If it were to run inside the Angular zone, every test 
+      // that used Overlay would have to be either async or fakeAsync.
+      this._ngZone.runOutsideAngular( () => {
+        setTimeout(finishDetach, 500);
+      });       
+      
     } // if (backdropToDetach) exists 
 
   } // f_detachBackdrop()

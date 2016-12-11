@@ -97,6 +97,11 @@ export class ConnectedPositionStrategy implements IPositionStrategy
     return this.f_ay_preferredPositons;
   }
 
+  dispose()
+  {
+    
+  }
+
 
   /**
    * updates the position of the overlay element, using whichever 
