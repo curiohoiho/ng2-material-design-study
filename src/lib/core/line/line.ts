@@ -5,6 +5,7 @@ import {
   ElementRef,
   QueryList
 } from '@angular/core';
+import { DefaultStyleCompatibilityModeModule } from '../compatibility/default-mode';
 
 
 /**

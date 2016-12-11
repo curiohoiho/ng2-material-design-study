@@ -1,4 +1,9 @@
-import { ComponentFactoryResolver, Injectable, ApplicationRef, Injector } from '@angular/core';
+import { 
+  ComponentFactoryResolver, 
+  Injectable, 
+  ApplicationRef, 
+  Injector,
+  NgZone } from '@angular/core';
 import { OverlayState } from './overlay-state';
 import { DomPortalHost } from '../portal/dom-portal-host';
 import { OverlayRef } from './overlay-ref';

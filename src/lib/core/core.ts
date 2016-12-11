@@ -30,6 +30,13 @@ import { NgModule, ModuleWithProviders } from '@angular/core';
 
 /*export { DomPortalHost } from './portal/dom-portal-host';*/
 
+// Projection 
+// export * from './projection/projection';
+
+// Platform
+// export * from './platform/platform';
+
+
 // Overlay - floating ui, like dialogs, alerts, selects, ... - based on Portals 
 /*export { Overlay, OVERLAY_PROVIDERS } from './overlay/overlay';
 export { OverlayContainer } from './overlay/overlay-container';
@@ -57,8 +64,9 @@ export * from './overlay/position/connected-position';
   LIVE_ANNOUNCER_ELEMENT_TOKEN
 } from './a11y/live-announcer';*/
 
-/*export { FocusTrap } from './a11y/focus-trap';
-export { InteractivityChecker } from './a11y/interactivity-checker';*/
+/*export { FocusTrap } from './a11y/focus-trap'; */
+/* export { InteractivityChecker } from './a11y/interactivity-checker';*/
+// export { isFakeMousedownFromScreenReader } from './a11y/fake-mousedown';
 
 /*export {
   MdUniqueSelectionDispatcher,
@@ -79,13 +87,18 @@ export { InteractivityChecker } from './a11y/interactivity-checker';*/
 // Keybindings
 export * from './keyboard/keycodes';
 
-/*export * from './compatibility/style-compatibility';*/
+/*export * from './compatibility/default-mode';*/
 
 // Animation
 export * from './animation/animation';
 
-// Coersion
-/*export { coerceBooleanProperty } from './coersion/boolean-property';*/
+// Coercion
+/*export { coerceBooleanProperty } from './coercion/boolean-property';*/
+/*export { coerceNumberProperty } from './coercion/number-property';*/
+
+// Compatibility 
+// export { DefaultStyleCompatibilityModeModule } from './compatibility/default-mode';
+// export { NoConflictStyleCompatibilityMode } from './compatibility/no-conflict-mode';
 
 
 /*

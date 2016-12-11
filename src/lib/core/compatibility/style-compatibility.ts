@@ -1,3 +1,9 @@
+/**
+ * Marked for deletion.
+ */
+
+
+
 import {
   NgModule,
   ModuleWithProviders,
@@ -85,6 +91,7 @@ export class StyleCompatibilityModule
       ngModule: StyleCompatibilityModule,
       providers: []
     };
+
 
   } // forRoot()
 
