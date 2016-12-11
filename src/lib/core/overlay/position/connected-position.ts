@@ -51,3 +51,13 @@ export class ConnectionPositionPair
   } // constructor
 
 } // class ConnectionPositionPair
+
+
+/** The change event emitted by the strategy when a fallback position is used. */
+export class ConnectedOverlayPositionChange
+{
+  constructor(
+    public connectionPair: ConnectionPositionPair
+  ) { }
+  
+}

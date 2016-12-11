@@ -14,12 +14,15 @@
 import { IPositionStrategy } from './position-strategy';
 import { ElementRef } from '@angular/core';
 import { ViewportRuler } from './viewport-ruler';
-import { applyCssTransform } from '../../style/apply-transform';
 import {
   ConnectionPositionPair,
   IOriginConnectionPosition,
-  IOverlayConnectionPosition
+  IOverlayConnectionPosition,
+  ConnectedOverlayPositionChange
 } from './connected-position';
+
+import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
 
 
 /**
@@ -66,6 +69,17 @@ export class ConnectedPositionStrategy implements IPositionStrategy
    */
   private f_origin: HTMLElement;
 
+  private f_onPositionChange:
+    Subject<ConnectedOverlayPositionChange> = new Subject<ConnectedOverlayPositionChange>();
+
+  
+  /** Emits an event when the connection point changes. */
+  get onPositionChange(): Observable<ConnectedOverlayPositionChange>
+  {
+    return this.f_onPositionChange.asObservable();
+  }
+
+
   constructor(
     private f_connectedTo: ElementRef,
     private f_originPos: IOriginConnectionPosition,
@@ -97,6 +111,7 @@ export class ConnectedPositionStrategy implements IPositionStrategy
     return this.f_ay_preferredPositons;
   }
 
+  /** To be used for any cleanup after the element gets destroyed. */
   dispose()
   {
     
@@ -122,7 +137,7 @@ export class ConnectedPositionStrategy implements IPositionStrategy
 
     const viewportRect = this.f_viewportRuler.getViewportRect();
     let firstOverlayPoint: Point = null;
-
+    
     // we want to place the overlay in the first of the preferred positions such that the 
     // overlay fits on screen.
     for (let pos of this.f_ay_preferredPositons)
@@ -137,8 +152,11 @@ export class ConnectedPositionStrategy implements IPositionStrategy
       if (this.f_willOverlayFitWininViewport(overlayPoint, overlayRect, viewportRect))
       {
         this.f_setElementPosition(a_element_overlay, overlayPoint);
+
+        this.f_onPositionChange.next(new ConnectedOverlayPositionChange(pos));
+
         return Promise.resolve(null);
-      }
+      } // if (f_willOverlayFitWininViewport)
 
     } // for
 
@@ -298,14 +316,8 @@ export class ConnectedPositionStrategy implements IPositionStrategy
     a_element_overlay: HTMLElement,
     a_overlayPoint: Point): void 
   {
-    let scrollPos = this.f_viewportRuler.getViewportScrollPosition();
-
-    let x = a_overlayPoint.x + scrollPos.left;
-    let y = a_overlayPoint.y + scrollPos.top;
-
-    // @todo: we don't want to always overwrite the transform property here,
-    // because it will need to be used for animations.
-    applyCssTransform(a_element_overlay, `translate(${x}px) translateY(${y}px)`);
+    a_element_overlay.style.left = a_overlayPoint.x + 'px';
+    a_element_overlay.style.top = a_overlayPoint.y + 'y';
 
   } // f_setElementPosition()
 
