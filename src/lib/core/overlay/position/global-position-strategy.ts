@@ -1,161 +1,141 @@
-import { applyCssTransform } from '../../style/apply-transform';
 import { IPositionStrategy } from './position-strategy';
 
-
 /**
- * a strategy for positioning overlays.  using this strategy, an overlay is given an
- * explicit position relative to the browser's viewport.
+ * A strategy for positioning overlays. Using this strategy, an overlay is given an
+ * explicit position relative to the browser's viewport. We use flexbox, instead of
+ * transforms, in order to avoid issues with subpixel rendering which can cause the
+ * element to become blurry.
  */
-export class GlobalPositionStrategy implements IPositionStrategy
-{
-  private _s_cssPosition: string = 'absolute';
-  private _s_top: string = '';
-  private _s_bottom: string = '';
-  private _s_left: string = '';
-  private _s_right: string = '';
+export class GlobalPositionStrategy implements IPositionStrategy {
+  private _cssPosition: string = 'static';
+  private _topOffset: string = '';
+  private _bottomOffset: string = '';
+  private _leftOffset: string = '';
+  private _rightOffset: string = '';
+  private _alignItems: string = '';
+  private _justifyContent: string = '';
+  private _width: string = '';
+  private _height: string = '';
 
-  /**
-   * array of individual applications of translateX().
-   * Currently only for centering.
-   */
-  private _ay_s_translateX: string[] = [];
+  /* A lazily-created wrapper for the overlay element that is used as a flex container.  */
+  private _wrapper: HTMLElement;
 
-  /**
-   * array of individual applications of translateY().
-   * Currently only for centering.
-   */
-  private _ay_s_translateY: string[] = [];
-
-  /**
-   * sets the element to use CSS position: fixed
-   */
-  fixed()
-  {
-    this._s_cssPosition = 'fixed';
+  /** Sets the top position of the overlay. Clears any previously set vertical position. */
+  top(value: string) {
+    this._bottomOffset = '';
+    this._topOffset = value;
+    this._alignItems = 'flex-start';
     return this;
   }
 
-
-  /**
-   * sets the element to use css position: absolute.  this is the default.
-   */
-  absolute()
-  {
-    this._s_cssPosition = 'absolute';
+  /** Sets the left position of the overlay. Clears any previously set horizontal position. */
+  left(value: string) {
+    this._rightOffset = '';
+    this._leftOffset = value;
+    this._justifyContent = 'flex-start';
     return this;
   }
 
+  /** Sets the bottom position of the overlay. 
+   *  Clears any previously set vertical position. 
+   */
+  bottom(value: string) {
+    this._topOffset = '';
+    this._bottomOffset = value;
+    this._alignItems = 'flex-end';
+    return this;
+  }
+
+  /** Sets the right position of the overlay. Clears any previously set horizontal position. */
+  right(value: string) {
+    this._leftOffset = '';
+    this._rightOffset = value;
+    this._justifyContent = 'flex-end';
+    return this;
+  }
+
+  /** Sets the overlay width and clears any previously set width. */
+  width(value: string) {
+    this._width = value;
+
+    // When the width is 100%, we should reset the `left` and the offset,
+    // in order to ensure that the element is flush against the viewport edge.
+    if (value === '100%') {
+      this.left('0px');
+    }
+
+    return this;
+  }
+
+  /** Sets the overlay height and clears any previously set height. */
+  height(value: string) {
+    this._height = value;
+
+    // When the height is 100%, we should reset the `top` and the offset,
+    // in order to ensure that the element is flush against the viewport edge.
+    if (value === '100%') {
+      this.top('0px');
+    }
+
+    return this;
+  }
 
   /**
-   * sets the top positions of the overlay. 
-   * clears any previously set vertical position.
+   * Centers the overlay horizontally with an optional offset.
+   * Clears any previously set horizontal position.
    */
-  top(a_s_value: string)
-  {
-    this._s_bottom = '';
-    this._ay_s_translateY = [];
-    this._s_top = a_s_value;
+  centerHorizontally(offset = '') {
+    this.left(offset);
+    this._justifyContent = 'center';
     return this;
-  } // top()
-
+  }
 
   /**
-   * set the left position of the overlay.
-   * clears any previously set horizontal position.
+   * Centers the overlay vertically with an optional offset.
+   * Clears any previously set vertical position.
    */
-  left(a_s_value: string): GlobalPositionStrategy
-  {
-    this._s_right = '';
-    this._ay_s_translateX = [];
-    this._s_left = a_s_value;
+  centerVertically(offset = '') {
+    this.top(offset);
+    this._alignItems = 'center';
     return this;
-  } // left()
-
+  }
 
   /**
-   * sets the bottom position of the overlay.
-   * clears any previously set vertical position.
+   * Apply the position to the element.
+   * TODO: internal
    */
-  bottom(a_s_value: string): GlobalPositionStrategy
-  {
-    this._s_top = '';
-    this._ay_s_translateY = [];
-    this._s_bottom = a_s_value;
-    return this;
-  } // bottom()
+  apply(element: HTMLElement): Promise<void> {
+    if (!this._wrapper) {
+      this._wrapper = document.createElement('div');
+      this._wrapper.classList.add('md-global-overlay-wrapper');
+      element.parentNode.insertBefore(this._wrapper, element);
+      this._wrapper.appendChild(element);
+    }
 
+    let styles = element.style;
+    let parentStyles = (element.parentNode as HTMLElement).style;
 
-  /**
-   * set the right position of the overlay.
-   * clears any previously set horizontal position.
-   */
-  right(a_s_value: string): GlobalPositionStrategy
-  {
-    this._s_left = '';
-    this._ay_s_translateX = [];
-    this._s_right = a_s_value;
-    return this;
-  } // right()
+    styles.position = this._cssPosition;
+    styles.marginTop = this._topOffset;
+    styles.marginLeft = this._leftOffset;
+    styles.marginBottom = this._bottomOffset;
+    styles.marginRight = this._rightOffset;
+    styles.width = this._width;
+    styles.height = this._height;
 
-
-  /** 
-   * centers the overlay horizontally with an optional offset.
-   * clears any previously set horizontal position.
-   */
-  centerHorizontally(a_s_offset: string = '0px'): GlobalPositionStrategy 
-  {
-    this._s_left = '50%';
-    this._s_right = '';
-    this._ay_s_translateX = ['-50%', a_s_offset];
-    return this;
-  } // centerHorizontally()
-
-
-  /**
-   * centers the overlay vertically with an optional offset.
-   * clears any previously set vertical position.
-   */
-  centerVertically(a_s_offset: string = '0px'): GlobalPositionStrategy
-  {
-    this._s_top = '50%';
-    this._s_bottom = '';
-    this._ay_s_translateY = ['-50%', a_s_offset];
-    return this;
-  } // centerVertically()
-
-
-  /** 
-   * apply the position to the element.
-   * @todo: internal 
-   */
-  apply(a_element: HTMLElement): Promise<void> 
-  {
-    a_element.style.position = this._s_cssPosition; // fixed or absolute
-    a_element.style.top = this._s_top;
-    a_element.style.left = this._s_left;
-    a_element.style.bottom = this._s_bottom;
-    a_element.style.right = this._s_right;
-
-    // @todo: we don't want to always overwrite the transform property here,
-    // because it will need to be used for animation
-    let translateX: string = this._reduceTranslateValues('translateX', this._ay_s_translateX);
-    let translateY: string = this._reduceTranslateValues('translateY', this._ay_s_translateY);
-
-    applyCssTransform(a_element, `${translateX} ${translateY}`);
+    parentStyles.justifyContent = this._justifyContent;
+    parentStyles.alignItems = this._alignItems;
 
     return Promise.resolve(null);
-
-  } // apply()
-
+  }
 
   /**
-   * reduce a list of translate values to a string the can be used
-   * in the transform property.
+   * Removes the wrapper element from the DOM.
    */
-  private _reduceTranslateValues(a_s_translateFn: string, a_ay_s_values: string[]): string 
-  {
-    return a_ay_s_values.map( t => `${a_s_translateFn}(${t})`).join(' ');
-
-  } // _reduceTranslateValues()
-
-} // class GlobalPositionStrategy
+  dispose(): void {
+    if (this._wrapper && this._wrapper.parentNode) {
+      this._wrapper.parentNode.removeChild(this._wrapper);
+      this._wrapper = null;
+    }
+  }
+}
