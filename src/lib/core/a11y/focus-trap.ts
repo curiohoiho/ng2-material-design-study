@@ -33,8 +33,42 @@ export class FocusTrap
 {
   @ViewChild('trappedContent') trappedContent: ElementRef;
 
-  constructor(private _checker: InteractivityChecker)
-  { } // constructor()
+  /** Whether the focus trap is active. */
+  @Input()
+  get disabled(): boolean { return this.f_b_disabled; }
+  set disabled(val: boolean) { this.f_b_disabled  = coerceBooleanProperty(val); }
+  private f_b_disabled: boolean = false;
+  
+  constructor(
+    private f_checker: InteractivityChecker,
+    private f_ngZone: NgZone
+  ) { } // constructor()
+
+
+  /** 
+   * Waits for the microtask queue to empty, then focuses the first 
+   * tabbable element within the focus trap region.
+   */
+  focusFirstTabbableElementWhenReady()
+  {
+    this.f_ngZone.onMicrotaskEmpty.first().subscribe( () => {
+      this.focusFirstTabbableElement();
+    });
+
+  } // focusFirstTabbableElementWhenReady()
+
+
+  /** 
+   * Waits for the microtask queue to empty, then focuses the last 
+   * tabbable element within the focus trap region.
+   */
+  focusLastTabbableElementWhenReady()
+  {
+    this.f_ngZone.onMicrotaskEmpty.first().subscribe( () => {
+      this.focusLastTabbableElement();
+    });
+
+  } // focusLastTabbableElementWhenReady()
 
 
   /**
@@ -42,7 +76,12 @@ export class FocusTrap
    */
   focusFirstTabbableElement() 
   {
-    let redirectToElement = this._getFirstTabbableElement(this.trappedContent.nativeElement);
+    // let redirectToElement = this._getFirstTabbableElement(this.trappedContent.nativeElement);
+    let rootElement: HTMLElement = this.trappedContent.nativeElement;
+    let redirectToElement = 
+      rootElement.querySelector('[md-focus-start]') as HTMLElement ||
+      this._getFirstTabbableElement(rootElement);
+
     if (redirectToElement) // if not null 
     {
       redirectToElement.focus();
@@ -55,7 +94,7 @@ export class FocusTrap
    */
   private _getFirstTabbableElement(a_root: HTMLElement): HTMLElement
   {
-    if (this._checker.isFocusable(a_root) && this._checker.isTabbable(a_root))
+    if (this.f_checker.isFocusable(a_root) && this.f_checker.isTabbable(a_root))
     {
       return a_root;
     }
@@ -83,7 +122,20 @@ export class FocusTrap
    */
   focusLastTabbableElement()
   {
-    let redirectToElement = this._getLastTabbableElement(this.trappedContent.nativeElement);
+    // let redirectToElement = this._getLastTabbableElement(this.trappedContent.nativeElement);
+    let rootElement: HTMLElement = this.trappedContent.nativeElement;
+    let focusTargets = rootElement.querySelectorAll('[md-focus-end]');
+    let redirectToElement: HTMLElement = null; 
+
+    if (focusTargets.length)
+    {
+      redirectToElement = focusTargets[focusTargets.length - 1] as HTMLElement;
+    }
+    else 
+    {
+      redirectToElement = this._getLastTabbableElement(rootElement);
+    }
+
     if (redirectToElement)
     {
       redirectToElement.focus();
@@ -99,7 +151,7 @@ export class FocusTrap
    */
   private _getLastTabbableElement(a_root: HTMLElement): HTMLElement
   {
-    if (this._checker.isFocusable(a_root) && this._checker.isTabbable(a_root))
+    if (this.f_checker.isFocusable(a_root) && this.f_checker.isTabbable(a_root))
     {
       return a_root;
     }
