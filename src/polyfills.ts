@@ -1,4 +1,4 @@
-import 'ie-shim'; // Internet Explorer 9 support.
+// import 'ie-shim'; // Internet Explorer 9 support.
 
 import 'core-js/es6/symbol';
 import 'core-js/es6/object';

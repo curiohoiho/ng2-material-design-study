@@ -16,9 +16,9 @@ module.exports = {
         hints: false
     },
     entry: {
-        'polyfills': './angularApp/polyfills.ts',
-        'vendor': './angularApp/vendor.ts',
-        'app': './angularApp/main.ts'
+        'polyfills': './src/polyfills.ts',
+        'vendor': './src/vendor.ts',
+        'app': './src/main.ts'
     },
 
     output: {
@@ -49,8 +49,8 @@ module.exports = {
                     'awesome-typescript-loader',
                     'angular-router-loader',
                     'angular2-template-loader',
-                    'source-map-loader',
-                    'tslint-loader'
+                    'source-map-loader' /* ,
+                    'tslint-loader' */
                 ]
             },
             {
@@ -90,11 +90,11 @@ module.exports = {
         new HtmlWebpackPlugin({
             filename: 'index.html',
             inject: 'body',
-            template: 'angularApp/index.html'
+            template: 'src/index.html'
         }),
 
         new CopyWebpackPlugin([
-            { from: './angularApp/images/*.*', to: 'assets/', flatten: true }
+            { from: './src/images/*.*', to: 'assets/', flatten: true }
         ])
     ]
 
