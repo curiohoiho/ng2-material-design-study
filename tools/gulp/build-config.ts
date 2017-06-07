@@ -1,8 +1,8 @@
-import { join } from 'path';
+import {join} from 'path';
 
-export const MATERIAL_VERSION = require('../../package.json');
+export const MATERIAL_VERSION = require('../../package.json').version;
 
-export const PROJECT_ROOT = join (__dirname, '../..');
+export const PROJECT_ROOT = join(__dirname, '../..');
 export const SOURCE_ROOT = join(PROJECT_ROOT, 'src');
 
 /** Root build output directory */
